@@ -33,11 +33,8 @@ public class User {
 
     private String phone;
 
-    private String address;
-
-    private String city;
-
-    private String state;
+    @Embedded
+    private Address address;
 
     private Boolean active;
 
@@ -50,5 +47,15 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name="role_id"))
     private List<Role> roles;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
 }

@@ -1,8 +1,8 @@
 package br.edu.ifce.projetoapsback.resource;
 
-import br.edu.ifce.projetoapsback.model.dto.CreateUserDto;
-import br.edu.ifce.projetoapsback.model.dto.LoginUserDto;
-import br.edu.ifce.projetoapsback.model.dto.RecoveryJwtTokenDto;
+import br.edu.ifce.projetoapsback.model.request.UserRequestDto;
+import br.edu.ifce.projetoapsback.model.request.LoginRequestDto;
+import br.edu.ifce.projetoapsback.model.response.RecoveryJwtTokenDto;
 import br.edu.ifce.projetoapsback.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,14 +17,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<RecoveryJwtTokenDto> authenticateUser(@RequestBody LoginUserDto loginUserDto) {
-        RecoveryJwtTokenDto token = userService.authenticateUser(loginUserDto);
+    public ResponseEntity<RecoveryJwtTokenDto> authenticateUser(@RequestBody LoginRequestDto loginRequestDto) {
+        RecoveryJwtTokenDto token = userService.authenticateUser(loginRequestDto);
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody CreateUserDto createUserDto) {
-        userService.createUser(createUserDto);
+    public ResponseEntity<Void> createUser(@RequestBody UserRequestDto userRequestDto) {
+        userService.createUser(userRequestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

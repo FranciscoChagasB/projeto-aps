@@ -1,18 +1,17 @@
-package br.edu.ifce.projetoapsback.model.dto;
+package br.edu.ifce.projetoapsback.model.request;
 
+import br.edu.ifce.projetoapsback.model.Address;
 import br.edu.ifce.projetoapsback.model.enumeration.RoleName;
 
 import java.time.LocalDateTime;
 
-public record CreateUserDto(
+public record UserRequestDto(
     String email,
     String password,
     String fullName,
     String cpf,
     String phone,
-    String address,
-    String city,
-    String state,
+    Address address,
     Boolean active,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,

@@ -1,5 +1,6 @@
 package br.edu.ifce.projetoapsback.security;
 
+import br.edu.ifce.projetoapsback.model.Address;
 import br.edu.ifce.projetoapsback.model.Role;
 import br.edu.ifce.projetoapsback.model.User;
 import lombok.Getter;
@@ -20,9 +21,7 @@ public class UserDetailsImpl implements UserDetails {
     private final String fullName;
     private final String cpf;
     private final String phone;
-    private final String address;
-    private final String city;
-    private final String state;
+    private final Address address;
     private final Boolean active;
     private final Collection<? extends GrantedAuthority> authorities;
 
@@ -34,8 +33,6 @@ public class UserDetailsImpl implements UserDetails {
         this.cpf = user.getCpf();
         this.phone = user.getPhone();
         this.address = user.getAddress();
-        this.city = user.getCity();
-        this.state = user.getState();
         this.active = user.getActive();
 
         // Converte as roles do usuário para GrantedAuthority

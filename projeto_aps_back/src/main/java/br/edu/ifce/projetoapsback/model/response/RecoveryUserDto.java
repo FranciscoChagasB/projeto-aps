@@ -1,4 +1,4 @@
-package br.edu.ifce.projetoapsback.model.dto;
+package br.edu.ifce.projetoapsback.model.response;
 
 import br.edu.ifce.projetoapsback.model.Role;
 

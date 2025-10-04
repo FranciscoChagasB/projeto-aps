@@ -1,6 +1,6 @@
 package br.edu.ifce.projetoapsback.config;
 
-import br.edu.ifce.projetoapsback.model.dto.CreateUserDto;
+import br.edu.ifce.projetoapsback.model.request.UserRequestDto;
 import br.edu.ifce.projetoapsback.model.enumeration.RoleName;
 import br.edu.ifce.projetoapsback.repository.UserRepository;
 import br.edu.ifce.projetoapsback.service.UserService;
@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
 
+/*
 @Configuration
 public class DataInitializer implements CommandLineRunner {
 
@@ -24,13 +25,12 @@ public class DataInitializer implements CommandLineRunner {
 
         // 1. Cria o usuário ADMINISTRATOR se ele não existir
         if (userRepository.findByEmail("admin@email.com").isEmpty()) {
-            CreateUserDto adminUser = new CreateUserDto(
+            UserRequestDto adminUser = new UserRequestDto(
                     "admin@email.com",
                     "123456", // A senha será codificada pelo seu serviço
                     "Administrador do Sistema",
                     "11111111111",
                     "85911111111",
-                    "Rua do Admin, 1",
                     "Fortaleza",
                     "CE",
                     true,
@@ -44,7 +44,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // 2. Cria o usuário PARENT se ele não existir
         if (userRepository.findByEmail("parent@email.com").isEmpty()) {
-            CreateUserDto parentUser = new CreateUserDto(
+            UserRequestDto parentUser = new UserRequestDto(
                     "parent@email.com",
                     "123456",
                     "Pai/Mãe Exemplo",
@@ -64,7 +64,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // 3. Cria o usuário HEALTH_PROFESSIONAL se ele não existir
         if (userRepository.findByEmail("health@email.com").isEmpty()) {
-            CreateUserDto healthUser = new CreateUserDto(
+            UserRequestDto healthUser = new UserRequestDto(
                     "health@email.com",
                     "123456",
                     "Profissional de Saúde Exemplo",
@@ -83,3 +83,5 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 }
+
+ */

@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
 
-/*
 @Configuration
 public class DataInitializer implements CommandLineRunner {
 
@@ -31,8 +30,7 @@ public class DataInitializer implements CommandLineRunner {
                     "Administrador do Sistema",
                     "11111111111",
                     "85911111111",
-                    "Fortaleza",
-                    "CE",
+                    null,
                     true,
                     LocalDateTime.now(),
                     null,
@@ -50,9 +48,7 @@ public class DataInitializer implements CommandLineRunner {
                     "Pai/Mãe Exemplo",
                     "22222222222",
                     "85922222222",
-                    "Rua dos Pais, 2",
-                    "Fortaleza",
-                    "CE",
+                    null,
                     true,
                     LocalDateTime.now(),
                     null,
@@ -70,9 +66,7 @@ public class DataInitializer implements CommandLineRunner {
                     "Profissional de Saúde Exemplo",
                     "33333333333",
                     "85933333333",
-                    "Rua da Saúde, 3",
-                    "Fortaleza",
-                    "CE",
+                    null,
                     true,
                     LocalDateTime.now(),
                     null,
@@ -83,5 +77,3 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 }
-
- */

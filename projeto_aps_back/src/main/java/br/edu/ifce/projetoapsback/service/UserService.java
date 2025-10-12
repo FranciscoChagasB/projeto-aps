@@ -3,6 +3,7 @@ package br.edu.ifce.projetoapsback.service;
 import br.edu.ifce.projetoapsback.config.SecurityConfiguration;
 import br.edu.ifce.projetoapsback.model.Role;
 import br.edu.ifce.projetoapsback.model.User;
+import br.edu.ifce.projetoapsback.model.enumeration.RoleName;
 import br.edu.ifce.projetoapsback.model.request.UserRequestDto;
 import br.edu.ifce.projetoapsback.model.request.LoginRequestDto;
 import br.edu.ifce.projetoapsback.model.response.RecoveryJwtTokenDto;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -63,6 +65,10 @@ public class UserService {
                 .updatedAt(userRequestDto.updatedAt())
                 .roles(List.of(Role.builder().name(userRequestDto.role()).build()))
                 .build();
+
+        if (userRequestDto.role() == RoleName.HEALTH_PROFESSIONAL){
+            newUser.setProfessionalCode(UUID.randomUUID().toString());
+        }
 
         // Salva o novo usuário no banco de dados
         userRepository.save(newUser);

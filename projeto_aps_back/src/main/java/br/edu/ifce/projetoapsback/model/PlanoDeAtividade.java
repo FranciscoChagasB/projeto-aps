@@ -1,10 +1,8 @@
 package br.edu.ifce.projetoapsback.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,17 +12,18 @@ import java.util.List;
  * Ela contém apenas os dados que definem um plano (nome, objetivo, quem criou, para quem é, etc.),
  * sem se preocupar com a lógica de execução ou relatórios.
  */
-@Table(name = "planos_atividades")
-@Entity(name = "PlanoDeAtividades")
+@Table(name = "planos_atividade")
+@Entity(name = "PlanoDeAtividade")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-public class PlanoDeAtividades {
+@Setter
+public class PlanoDeAtividade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String nome;
     private String objetivo;

@@ -2,10 +2,7 @@ package br.edu.ifce.projetoapsback.model;
 
 import br.edu.ifce.projetoapsback.model.enumeration.StatusRegistro;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -21,11 +18,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 public class RegistroDeAtividade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     // Relacionamento: Muitos registros pertencem a UMA atividade.
     @ManyToOne(optional = false)
@@ -40,7 +38,7 @@ public class RegistroDeAtividade {
     // Relacionamento direto com o plano para facilitar consultas de progresso de um plano específico
     @ManyToOne(optional = false)
     @JoinColumn(name = "plano_id")
-    private PlanoDeAtividades plano;
+    private PlanoDeAtividade plano;
 
     @Column(nullable = false)
     private LocalDateTime dataHoraConclusao;

@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 
 public record RegistroRequestDto(
         @NotNull(message = "O ID da atividade é obrigatório")
-        Long atividadeId,
+        Integer atividadeId,
 
         @NotNull(message = "O ID do plano é obrigatório")
-        Long planoId,
+        Integer planoId,
 
         @NotNull(message = "O ID da criança é obrigatório")
-        Long criancaId,
+        Integer criancaId,
 
         @NotNull(message = "A data e hora de conclusão são obrigatórias")
         @PastOrPresent(message = "A data de conclusão não pode ser no futuro")

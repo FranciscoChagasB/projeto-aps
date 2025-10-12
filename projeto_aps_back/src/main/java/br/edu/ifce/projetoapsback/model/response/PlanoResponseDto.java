@@ -1,6 +1,6 @@
 package br.edu.ifce.projetoapsback.model.response;
 
-import br.edu.ifce.projetoapsback.model.PlanoDeAtividades;
+import br.edu.ifce.projetoapsback.model.PlanoDeAtividade;
 import br.edu.ifce.projetoapsback.model.dto.AtividadeSummaryDto;
 import br.edu.ifce.projetoapsback.model.dto.CriancaSummaryDto;
 import br.edu.ifce.projetoapsback.model.dto.UserSummaryDto;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record PlanoResponseDto(
-        Long id,
+        Integer id,
         String nome,
         String objetivo,
         UserSummaryDto terapeuta,
@@ -19,7 +19,7 @@ public record PlanoResponseDto(
         LocalDateTime dataCriacao,
         LocalDateTime dataAtualizacao
 ) {
-    public PlanoResponseDto(PlanoDeAtividades plano) {
+    public PlanoResponseDto(PlanoDeAtividade plano) {
         this(
                 plano.getId(),
                 plano.getNome(),

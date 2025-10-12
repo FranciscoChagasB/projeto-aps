@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record CriancaResponseDto(
-        Long id,
+        Integer id,
         String nomeCompleto,
         LocalDate dataNascimento,
-        String diagnostico,
+        String anexoDiagnostico,
+        String descricaoDiagnostico,
         String informacoesAdicionais,
+        String fotoCrianca,
         UserSummaryDto responsavel, // DTO resumido para não expor todos os dados do usuário
         List<UserSummaryDto> terapeutas
 ) {
@@ -22,8 +24,10 @@ public record CriancaResponseDto(
                 crianca.getId(),
                 crianca.getNomeCompleto(),
                 crianca.getDataNascimento(),
+                crianca.getAnexoDiagnosticoBase64(),
                 crianca.getDescricaoDiagnostico(),
                 crianca.getInformacoesAdicionais(),
+                crianca.getFotoCriancaBase64(),
                 new UserSummaryDto(crianca.getResponsavel()),
                 crianca.getTerapeutas().stream().map(UserSummaryDto::new).collect(Collectors.toList())
         );

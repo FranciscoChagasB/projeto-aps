@@ -14,8 +14,13 @@ public record CriancaRequestDto(
         @Past(message = "A data de nascimento deve ser no passado")
         LocalDate dataNascimento,
 
-        String diagnostico,
+        String anexoDiagnostico,
+
+        String descricaoDiagnostico,
+
         String informacoesAdicionais,
+
+        String fotoCrianca,
 
         List<Long> terapeutaIds
 ) {}

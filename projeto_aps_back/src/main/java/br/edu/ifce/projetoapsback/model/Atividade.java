@@ -2,10 +2,7 @@ package br.edu.ifce.projetoapsback.model;
 
 import br.edu.ifce.projetoapsback.model.enumeration.TipoAtividade;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,11 +19,12 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 public class Atividade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String titulo;
 
@@ -45,7 +43,7 @@ public class Atividade {
 
     // Mapeado pelo 'PlanoDeAtividades' para evitar redundância na definição do relacionamento.
     @ManyToMany(mappedBy = "atividades")
-    private List<PlanoDeAtividades> planos;
+    private List<PlanoDeAtividade> planos;
 
     private LocalDateTime dataCriacao;
 

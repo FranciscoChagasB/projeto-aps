@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record RecoveryUserDto (
-    Long id,
+    Integer id,
     String email,
     String password,
     String fullName,
@@ -18,7 +18,8 @@ public record RecoveryUserDto (
     Boolean active,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
-    List<Role> roles
+    List<Role> roles,
+    String professionalCode
 ) {
 
 }

@@ -13,8 +13,8 @@ public record PlanoRequestDto(
         String objetivo,
 
         @NotNull(message = "O ID da criança é obrigatório")
-        Long criancaId,
+        Integer criancaId,
 
         @NotEmpty(message = "O plano deve conter ao menos uma atividade")
-        List<Long> atividadeIds
+        List<Integer> atividadeIds
 ) {}

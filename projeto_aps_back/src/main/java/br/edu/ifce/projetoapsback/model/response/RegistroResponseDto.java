@@ -7,7 +7,7 @@ import br.edu.ifce.projetoapsback.model.enumeration.StatusRegistro;
 import java.time.LocalDateTime;
 
 public record RegistroResponseDto(
-        Long id,
+        Integer id,
         AtividadeSummaryDto atividade,
         CriancaSummaryDto crianca,
         LocalDateTime dataHoraConclusao,

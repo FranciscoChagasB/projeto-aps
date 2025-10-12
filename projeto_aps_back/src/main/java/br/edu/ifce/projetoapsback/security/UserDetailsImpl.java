@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 public class UserDetailsImpl implements UserDetails {
 
-    private final Long id;
+    private final Integer id;
     private final String email;
     private final String password;
     private final String fullName;

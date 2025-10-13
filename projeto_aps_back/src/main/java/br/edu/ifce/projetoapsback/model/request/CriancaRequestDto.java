@@ -22,5 +22,5 @@ public record CriancaRequestDto(
 
         String fotoCrianca,
 
-        List<Long> terapeutaIds
+        List<Integer> terapeutaIds
 ) {}

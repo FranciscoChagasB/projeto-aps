@@ -23,6 +23,7 @@ public class UserDetailsImpl implements UserDetails {
     private final String phone;
     private final Address address;
     private final Boolean active;
+    private final String professionalCode;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(User user) {
@@ -34,7 +35,7 @@ public class UserDetailsImpl implements UserDetails {
         this.phone = user.getPhone();
         this.address = user.getAddress();
         this.active = user.getActive();
-
+        this.professionalCode = user.getProfessionalCode();
         // Converte as roles do usuário para GrantedAuthority
         this.authorities = mapRolesToAuthorities(user.getRoles());
     }

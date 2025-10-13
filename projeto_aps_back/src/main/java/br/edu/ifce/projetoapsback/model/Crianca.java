@@ -32,8 +32,10 @@ public class Crianca {
 
     private String informacoesAdicionais; // Alergias, preferências, observações importantes
 
+    @Lob
     private String fotoCriancaBase64; // Base64 da foto da criança
 
+    @Lob
     private String anexoDiagnosticoBase64; // Base64 do arquivo pdf do laudo da criança, se houver
 
     private String descricaoDiagnostico; // Ex: "Transtorno do Espectro Autista (TEA) - Nível 1"

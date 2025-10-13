@@ -5,6 +5,9 @@ import br.edu.ifce.projetoapsback.model.dto.UserSummaryDto;
 import br.edu.ifce.projetoapsback.model.request.CriancaRequestDto;
 import br.edu.ifce.projetoapsback.model.response.CriancaResponseDto;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,7 +23,11 @@ public class CriancaMapper {
                 crianca.getInformacoesAdicionais(),
                 crianca.getFotoCriancaBase64(),
                 new UserSummaryDto(crianca.getResponsavel()),
-                crianca.getTerapeutas().stream().map(UserSummaryDto::new).collect(Collectors.toList())
+                Optional.ofNullable(crianca.getTerapeutas())
+                        .orElse(Collections.emptyList()) // Se terapeutas for nulo, usa uma lista vazia
+                        .stream()
+                        .map(UserSummaryDto::new)
+                        .collect(Collectors.toList())
         );
     }
 

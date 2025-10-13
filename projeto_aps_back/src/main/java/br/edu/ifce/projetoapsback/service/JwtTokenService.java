@@ -33,6 +33,8 @@ public class JwtTokenService {
                     .withSubject(user.getUsername())
                     .withClaim("active", user.getActive())
                     .withClaim("cpf", user.getCpf())
+                    .withClaim("fullName", user.getFullName())
+                    .withClaim("professionalCode", user.getProfessionalCode())
                     .withClaim("roles", user.getAuthorities()
                             .stream()
                             .map(GrantedAuthority::getAuthority)

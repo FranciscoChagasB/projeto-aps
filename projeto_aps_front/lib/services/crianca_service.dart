@@ -66,4 +66,13 @@ class CriancaService {
           'Falha ao atualizar dados da criança: ${e.response?.data['message']}');
     }
   }
+
+  Future<void> deleteCrianca(int criancaId) async {
+    try {
+      await _dio.delete('/criancas/$criancaId');
+    } on DioException catch (e) {
+      throw Exception(
+          'Falha ao atualizar dados da criança: ${e.response?.data['message']}');
+    }
+  }
 }

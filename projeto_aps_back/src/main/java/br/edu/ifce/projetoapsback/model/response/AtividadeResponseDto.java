@@ -11,8 +11,7 @@ public record AtividadeResponseDto(
         String titulo,
         String descricaoDetalhada,
         Integer duracaoEstimadaMinutos,
-        TipoAtividade tipo,
-        List<PlanoDeAtividade> planos
+        TipoAtividade tipo
 ) {
     // Construtor de conveniência para mapear da entidade para o DTO
     public AtividadeResponseDto(Atividade atividade) {
@@ -21,8 +20,7 @@ public record AtividadeResponseDto(
                 atividade.getTitulo(),
                 atividade.getDescricaoDetalhada(),
                 atividade.getDuracaoEstimadaMinutos(),
-                atividade.getTipo(),
-                atividade.getPlanos()
+                atividade.getTipo()
         );
     }
 }

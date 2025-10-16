@@ -5,12 +5,14 @@ import br.edu.ifce.projetoapsback.model.Crianca;
 import br.edu.ifce.projetoapsback.model.PlanoDeAtividade;
 import br.edu.ifce.projetoapsback.model.RegistroDeAtividade;
 import br.edu.ifce.projetoapsback.model.request.RegistroRequestDto;
+import br.edu.ifce.projetoapsback.model.request.RegistroUpdateRequestDto;
 import br.edu.ifce.projetoapsback.model.response.RegistroResponseDto;
 import br.edu.ifce.projetoapsback.repository.AtividadeRepository;
 import br.edu.ifce.projetoapsback.repository.CriancaRepository;
 import br.edu.ifce.projetoapsback.repository.PlanoDeAtividadeRepository;
 import br.edu.ifce.projetoapsback.repository.RegistroDeAtividadeRepository;
 import br.edu.ifce.projetoapsback.util.mapper.RegistroMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -65,9 +67,18 @@ public class RegistroService {
         RegistroDeAtividade registro = registroRepository.findById(registroId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Registro não encontrado"));
 
-        // Lógica de permissão (verificar se o usuário logado é o responsável pela criança do registro)
 
         registro.setObservacoesDoResponsavel(observacoes);
+        RegistroDeAtividade registroAtualizado = registroRepository.save(registro);
+        return registroMapper.toResponseDto(registroAtualizado);
+    }
+
+    public RegistroResponseDto update(Integer registroId, RegistroUpdateRequestDto requestDto) {
+        RegistroDeAtividade registro = registroRepository.findById(registroId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Registro não encontrado"));
+
+        registro.setStatus(requestDto.status());
+        registro.setObservacoesDoResponsavel(requestDto.observacoesDoResponsavel());
         RegistroDeAtividade registroAtualizado = registroRepository.save(registro);
         return registroMapper.toResponseDto(registroAtualizado);
     }

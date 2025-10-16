@@ -26,12 +26,15 @@ class _AddEditActivityScreenState extends State<AddEditActivityScreen> {
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.atividade?.titulo ?? '');
-    _descriptionController = TextEditingController(text: widget.atividade?.descricaoDetalhada ?? '');
-    _durationController = TextEditingController(text: widget.atividade?.duracaoEstimadaMinutos.toString() ?? '');
+    _titleController =
+        TextEditingController(text: widget.atividade?.titulo ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.atividade?.descricaoDetalhada ?? '');
+    _durationController = TextEditingController(
+        text: widget.atividade?.duracaoEstimadaMinutos.toString() ?? '');
     _selectedType = widget.atividade?.tipo;
   }
-  
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -45,7 +48,8 @@ class _AddEditActivityScreenState extends State<AddEditActivityScreen> {
 
     setState(() => _isLoading = true);
 
-    final therapistProvider = Provider.of<TherapistProvider>(context, listen: false);
+    final therapistProvider =
+        Provider.of<TherapistProvider>(context, listen: false);
 
     final atividadeData = {
       "titulo": _titleController.text,
@@ -56,19 +60,20 @@ class _AddEditActivityScreenState extends State<AddEditActivityScreen> {
 
     try {
       if (_isEditing) {
-        await therapistProvider.updateAtividade(widget.atividade!.id, atividadeData);
+        await therapistProvider.updateAtividade(
+            widget.atividade!.id, atividadeData);
       } else {
         await therapistProvider.createAtividade(atividadeData);
       }
-      if(mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      if(mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
       }
     } finally {
-      if(mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -77,57 +82,80 @@ class _AddEditActivityScreenState extends State<AddEditActivityScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Editar Atividade' : 'Nova Atividade'),
-        actions: [
-          if (_isLoading)
-            const Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white)))
-          else
-            IconButton(icon: const Icon(Icons.save), onPressed: _saveForm, tooltip: 'Salvar'),
-        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Título da Atividade'),
-                textCapitalization: TextCapitalization.sentences,
-                validator: (v) => (v == null || v.isEmpty) ? 'Título é obrigatório.' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Descrição Detalhada'),
-                maxLines: 5,
-                textCapitalization: TextCapitalization.sentences,
-                validator: (v) => (v == null || v.isEmpty) ? 'Descrição é obrigatória.' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _durationController,
-                decoration: const InputDecoration(labelText: 'Duração Estimada (minutos)'),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (v) => (v == null || v.isEmpty) ? 'Duração é obrigatória.' : null,
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<TipoAtividade>(
-                value: _selectedType,
-                decoration: const InputDecoration(labelText: 'Tipo de Atividade'),
-                items: TipoAtividade.values
-                  .where((tipo) => tipo != TipoAtividade.UNKNOWN) // Não mostrar 'UNKNOWN' como opção
-                  .map((tipo) => DropdownMenuItem(
-                    value: tipo,
-                    child: Text(tipo.name),
-                  )).toList(),
-                onChanged: (value) => setState(() => _selectedType = value),
-                validator: (v) => v == null ? 'Selecione um tipo.' : null,
-              ),
-            ],
+      body: Form(
+        key: _formKey,
+        child: Column(children: [
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                TextFormField(
+                  controller: _titleController,
+                  decoration:
+                      const InputDecoration(labelText: 'Título da Atividade'),
+                  textCapitalization: TextCapitalization.sentences,
+                  validator: (v) =>
+                      (v == null || v.isEmpty) ? 'Título é obrigatório.' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration:
+                      const InputDecoration(labelText: 'Descrição Detalhada'),
+                  maxLines: 5,
+                  textCapitalization: TextCapitalization.sentences,
+                  validator: (v) => (v == null || v.isEmpty)
+                      ? 'Descrição é obrigatória.'
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _durationController,
+                  decoration: const InputDecoration(
+                      labelText: 'Duração Estimada (minutos)'),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (v) => (v == null || v.isEmpty)
+                      ? 'Duração é obrigatória.'
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<TipoAtividade>(
+                  value: _selectedType,
+                  decoration:
+                      const InputDecoration(labelText: 'Tipo de Atividade'),
+                  items: TipoAtividade.values
+                      .where((tipo) =>
+                          tipo !=
+                          TipoAtividade
+                              .UNKNOWN) // Não mostrar 'UNKNOWN' como opção
+                      .map((tipo) => DropdownMenuItem(
+                            value: tipo,
+                            child: Text(tipo.name),
+                          ))
+                      .toList(),
+                  onChanged: (value) => setState(() => _selectedType = value),
+                  validator: (v) => v == null ? 'Selecione um tipo.' : null,
+                ),
+              ],
+            ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : ElevatedButton.icon(
+                    icon: const Icon(Icons.save),
+                    label: Text(
+                        _isEditing ? 'Salvar Alterações' : 'Criar Atividade'),
+                    onPressed: _saveForm,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                  ),
+          ),
+        ]),
       ),
     );
   }

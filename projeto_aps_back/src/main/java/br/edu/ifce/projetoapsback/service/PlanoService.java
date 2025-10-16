@@ -5,12 +5,14 @@ import br.edu.ifce.projetoapsback.model.Crianca;
 import br.edu.ifce.projetoapsback.model.PlanoDeAtividade;
 import br.edu.ifce.projetoapsback.model.User;
 import br.edu.ifce.projetoapsback.model.request.PlanoRequestDto;
+import br.edu.ifce.projetoapsback.model.request.PlanoUpdateRequestDto;
 import br.edu.ifce.projetoapsback.model.response.PlanoResponseDto;
 import br.edu.ifce.projetoapsback.repository.AtividadeRepository;
 import br.edu.ifce.projetoapsback.repository.CriancaRepository;
 import br.edu.ifce.projetoapsback.repository.PlanoDeAtividadeRepository;
 import br.edu.ifce.projetoapsback.repository.UserRepository;
 import br.edu.ifce.projetoapsback.util.mapper.PlanoMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -119,4 +121,15 @@ public class PlanoService {
         }
     }
 
+    public PlanoResponseDto update(Integer id, PlanoUpdateRequestDto requestDto, String terapeutaEmail) {
+        User terapeuta = findUserByEmail(terapeutaEmail);
+        PlanoDeAtividade plano = findPlanoById(id);
+        checkTerapeutaPermission(plano, terapeuta);
+
+        plano.setNome(requestDto.nome());
+        plano.setObjetivo(requestDto.objetivo());
+
+        PlanoDeAtividade planoAtualizado = planoRepository.save(plano);
+        return planoMapper.toResponseDto(planoAtualizado);
+    }
 }

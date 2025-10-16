@@ -5,6 +5,8 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Este aplicativo precisa de acesso à galeria para selecionar uma foto para o perfil da criança.</string>
 	<key>NSCameraUsageDescription</key>
+	<string>Este aplicativo precisa de acesso à câmera para escanear o QR Code do profissional.</string>
+	<key>NSCameraUsageDescription</key>
 	<string>Este aplicativo precisa de acesso à câmera para tirar uma foto para o perfil da criança.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Este aplicativo precisa de acesso ao microfone (opcional ao gravar vídeos).</string>

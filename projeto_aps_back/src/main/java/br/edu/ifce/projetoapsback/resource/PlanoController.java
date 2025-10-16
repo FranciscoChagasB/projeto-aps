@@ -1,6 +1,7 @@
 package br.edu.ifce.projetoapsback.resource;
 
 import br.edu.ifce.projetoapsback.model.request.PlanoRequestDto;
+import br.edu.ifce.projetoapsback.model.request.PlanoUpdateRequestDto;
 import br.edu.ifce.projetoapsback.model.response.PlanoResponseDto;
 import br.edu.ifce.projetoapsback.service.PlanoService;
 import jakarta.validation.Valid;
@@ -59,5 +60,14 @@ public class PlanoController {
     public ResponseEntity<Void> deletePlano(@PathVariable Integer id, Authentication authentication) {
         planoService.delete(id, authentication.getName());
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('HEALTH_PROFESSIONAL')")
+    public ResponseEntity<PlanoResponseDto> updatePlano(
+            @PathVariable Integer id,
+            @Valid @RequestBody PlanoUpdateRequestDto requestDto,
+            Authentication authentication) {
+        return ResponseEntity.ok(planoService.update(id, requestDto, authentication.getName()));
     }
 }

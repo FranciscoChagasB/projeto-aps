@@ -1,6 +1,7 @@
 package br.edu.ifce.projetoapsback.model;
 
 import br.edu.ifce.projetoapsback.model.enumeration.TipoAtividade;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,6 +44,7 @@ public class Atividade {
 
     // Mapeado pelo 'PlanoDeAtividades' para evitar redundância na definição do relacionamento.
     @ManyToMany(mappedBy = "atividades")
+    @JsonIgnore
     private List<PlanoDeAtividade> planos;
 
     private LocalDateTime dataCriacao;

@@ -26,7 +26,7 @@ class _AddEditChildScreenState extends State<AddEditChildScreen> {
   late TextEditingController _diagnosticDescriptionController;
   late TextEditingController _additionalInfoController;
   DateTime? _selectedDate;
-  
+
   XFile? _pickedImage;
   PlatformFile? _pickedPdf;
 
@@ -35,9 +35,12 @@ class _AddEditChildScreenState extends State<AddEditChildScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.crianca?.nomeCompleto ?? '');
-    _diagnosticDescriptionController = TextEditingController(text: widget.crianca?.descricaoDiagnostico ?? '');
-    _additionalInfoController = TextEditingController(text: widget.crianca?.informacoesAdicionais ?? '');
+    _nameController =
+        TextEditingController(text: widget.crianca?.nomeCompleto ?? '');
+    _diagnosticDescriptionController =
+        TextEditingController(text: widget.crianca?.descricaoDiagnostico ?? '');
+    _additionalInfoController = TextEditingController(
+        text: widget.crianca?.informacoesAdicionais ?? '');
     _selectedDate = widget.crianca?.dataNascimento;
   }
 
@@ -50,7 +53,8 @@ class _AddEditChildScreenState extends State<AddEditChildScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final pickedXFile = await _picker.pickImage(source: source, imageQuality: 50, maxWidth: 800);
+    final pickedXFile = await _picker.pickImage(
+        source: source, imageQuality: 50, maxWidth: 800);
     if (pickedXFile != null) {
       setState(() {
         _pickedImage = pickedXFile;
@@ -116,8 +120,9 @@ class _AddEditChildScreenState extends State<AddEditChildScreen> {
 
   Future<void> _saveForm() async {
     if (!_formKey.currentState!.validate() || _selectedDate == null) {
-      if(_selectedDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, selecione a data de nascimento.')));
+      if (_selectedDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Por favor, selecione a data de nascimento.')));
       }
       return;
     }
@@ -144,20 +149,28 @@ class _AddEditChildScreenState extends State<AddEditChildScreen> {
       "informacoesAdicionais": _additionalInfoController.text,
       "fotoCrianca": imageBase64,
       "anexoDiagnostico": pdfBase64,
-      "terapeutaIds": widget.crianca?.terapeutas.map((t) => t.id).toList() ?? [],
+      "terapeutaIds":
+          widget.crianca?.terapeutas.map((t) => t.id).toList() ?? [],
     };
 
     try {
       String successMessage;
+      Crianca updatedCrianca;
+
       if (widget.crianca == null) {
-        await parentProvider.createCrianca(criancaData);
+        final newCrianca = await parentProvider.createCrianca(criancaData);
+        updatedCrianca = newCrianca; // Atribuindo a criança criada
         successMessage = 'Criança adicionada com sucesso!';
       } else {
-        await parentProvider.updateCrianca(widget.crianca!.id, criancaData);
-        successMessage = 'Dados da criança atualizados com sucesso!';
+        final updatedCriancaResponse =
+            await parentProvider.updateCrianca(widget.crianca!.id, criancaData);
+        updatedCrianca =
+            updatedCriancaResponse; // Atribuindo a criança atualizada
+        successMessage = 'Alterações salvas com sucesso!';
       }
+
       if (mounted) {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(updatedCrianca);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(successMessage), backgroundColor: Colors.green),
@@ -196,7 +209,8 @@ class _AddEditChildScreenState extends State<AddEditChildScreen> {
                         CircleAvatar(
                           radius: 60,
                           backgroundImage: _buildAvatarImage(),
-                          child: _pickedImage == null && widget.crianca?.fotoCriancaBase64 == null
+                          child: _pickedImage == null &&
+                                  widget.crianca?.fotoCriancaBase64 == null
                               ? const Icon(Icons.person, size: 60)
                               : null,
                         ),
@@ -287,9 +301,11 @@ class _AddEditChildScreenState extends State<AddEditChildScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton.icon(
                       icon: const Icon(Icons.save),
-                      label: Text(widget.crianca == null ? 'Adicionar Criança' : 'Salvar Alterações'),
+                      label: Text(widget.crianca == null
+                          ? 'Adicionar Criança'
+                          : 'Salvar Alterações'),
                       onPressed: _saveForm,
-                  ),
+                    ),
             ),
           ],
         ),
@@ -316,5 +332,4 @@ class _AddEditChildScreenState extends State<AddEditChildScreen> {
     // Se não há nenhuma imagem, retorna nulo.
     return null;
   }
-  
 }

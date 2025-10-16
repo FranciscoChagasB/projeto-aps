@@ -4,6 +4,7 @@ import 'package:projeto_aps_front/providers/admin_provider.dart';
 import 'package:projeto_aps_front/providers/auth_provider.dart';
 import 'package:projeto_aps_front/providers/parent_provider.dart';
 import 'package:projeto_aps_front/providers/plano_provider.dart';
+import 'package:projeto_aps_front/providers/registro_provider.dart';
 import 'package:projeto_aps_front/providers/therapist_provider.dart';
 import 'package:projeto_aps_front/screens/auth/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, RegistroProvider>(
+          create: (_) => RegistroProvider(),
+          update: (_, auth, registro) => registro!..update(auth),
+        ),
         ChangeNotifierProxyProvider<AuthProvider, ParentProvider>(
           create: (_) => ParentProvider(),
           update: (_, auth, previousParent) => previousParent!..update(auth),

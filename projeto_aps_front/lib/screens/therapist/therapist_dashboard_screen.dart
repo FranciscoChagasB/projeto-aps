@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:projeto_aps_front/screens/therapist/therapist_child_detail_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../models/crianca.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/therapist_provider.dart';
@@ -51,44 +52,75 @@ class _TherapistDashboardScreenState extends State<TherapistDashboardScreen> {
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Seu Código Profissional'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Compartilhe este código com os responsáveis para que eles possam vincular você aos seus filhos:',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            SelectableText(
-              code,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            child: const Text('Copiar'),
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: code));
-              Navigator.of(ctx).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content:
-                        Text('Código copiado para a área de transferência!')),
-              );
-            },
-          ),
-          ElevatedButton(
-            child: const Text('Fechar'),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        final double screenWidth = MediaQuery.of(context).size.width;
+        final double dialogWidth = screenWidth > 600 ? 500 : screenWidth * 0.9;
+        final double qrSize = screenWidth > 600 ? 250 : screenWidth * 0.5;
+
+        return Dialog(
+            insetPadding:
+                const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: dialogWidth),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  const Text(
+                    'Meu Código Profissional',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Peça para o responsável escanear este QR Code ou compartilhar o código abaixo:',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: qrSize,
+                    height: qrSize,
+                    child: QrImageView(
+                      data: code,
+                      version: QrVersions.auto,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SelectableText(
+                    code,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 32),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 16,
+                    children: [
+                      TextButton(
+                        child: const Text('Copiar Código'),
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: code));
+                          Navigator.of(ctx).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Código copiado!')),
+                          );
+                        },
+                      ),
+                      ElevatedButton(
+                        child: const Text('Fechar'),
+                        onPressed: () => Navigator.of(ctx).pop(),
+                      ),
+                    ],
+                  )
+                ]),
+              ),
+            ));
+      },
     );
   }
 
@@ -98,13 +130,8 @@ class _TherapistDashboardScreenState extends State<TherapistDashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Meus Pacientes'),
+        title: const Text('Painel do Terapeuta'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.library_books_outlined),
-            tooltip: 'Biblioteca de Atividades',
-            onPressed: _navigateToActivityLibrary,
-          ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Sair',
@@ -120,47 +147,65 @@ class _TherapistDashboardScreenState extends State<TherapistDashboardScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Bem-vindo(a), ${user?.fullName ?? ''}!',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Gerencie seus pacientes e planos de atividades.',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Colors.grey.shade700),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.qr_code_2, size: 30),
-                  tooltip: 'Mostrar meu código',
-                  onPressed: () =>
-                      _showProfessionalCode(context, user?.professionalCode),
-                ),
-              ],
+      body: RefreshIndicator(
+        onRefresh: () => Provider.of<TherapistProvider>(context, listen: false)
+            .fetchMeusPacientes(),
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            Text(
+              'Bem-vindo(a),\n${user?.fullName ?? ''}!',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-          ),
-          const Divider(height: 1),
-          Expanded(
-            child: Consumer<TherapistProvider>(
+            const SizedBox(height: 24),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                const double breakPoint = 400.0;
+                final bool useColumnLayout = constraints.maxWidth < breakPoint;
+
+                final actionCards = [
+                  _buildActionCard(
+                    context,
+                    icon: Icons.library_books_outlined,
+                    label: 'Biblioteca de Atividades',
+                    onTap: _navigateToActivityLibrary,
+                  ),
+                  _buildActionCard(
+                    context,
+                    icon: Icons.qr_code_scanner_outlined,
+                    label: 'Meu Código Profissional',
+                    onTap: () =>
+                        _showProfessionalCode(context, user?.professionalCode),
+                  ),
+                ];
+
+                if (useColumnLayout) {
+                  return Column(
+                    children: [
+                      actionCards[0],
+                      const SizedBox(height: 16),
+                      actionCards[1],
+                    ],
+                  );
+                } else {
+                  return Row(
+                    children: [
+                      Expanded(child: actionCards[0]),
+                      const SizedBox(width: 16),
+                      Expanded(child: actionCards[1]),
+                    ],
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 32),
+            Text('Meus Pacientes',
+                style: Theme.of(context).textTheme.titleLarge),
+            const Divider(height: 24),
+            Consumer<TherapistProvider>(
               builder: (context, therapistProvider, child) {
-                if (therapistProvider.isLoadingPacientes) {
+                if (therapistProvider.isLoadingPacientes &&
+                    therapistProvider.pacientes.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (therapistProvider.error != null) {
@@ -169,58 +214,61 @@ class _TherapistDashboardScreenState extends State<TherapistDashboardScreen> {
                 }
                 if (therapistProvider.pacientes.isEmpty) {
                   return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        'Nenhum paciente vinculado à sua conta.\nCompartilhe seu código de profissional com os responsáveis.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    ),
-                  );
+                      child: Text('Nenhum paciente vinculado.'));
                 }
 
-                return RefreshIndicator(
-                  onRefresh: () => therapistProvider.fetchMeusPacientes(),
-                  child: ListView.builder(
-                    itemCount: therapistProvider.pacientes.length,
-                    itemBuilder: (ctx, i) {
-                      final paciente = therapistProvider.pacientes[i];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: (paciente.fotoCriancaBase64 !=
-                                        null &&
-                                    paciente.fotoCriancaBase64!.isNotEmpty)
-                                ? MemoryImage(
-                                    base64Decode(paciente.fotoCriancaBase64!))
-                                : null,
-                            child: (paciente.fotoCriancaBase64 == null ||
-                                    paciente.fotoCriancaBase64!.isEmpty)
-                                ? Text(paciente.nomeCompleto.isNotEmpty
-                                    ? paciente.nomeCompleto[0]
-                                    : '?')
-                                : null,
-                          ),
-                          title: Text(paciente.nomeCompleto,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(
-                              'Responsável: ${paciente.responsavel.fullName}'),
-                          trailing:
-                              const Icon(Icons.arrow_forward_ios, size: 16),
-                          onTap: () => _navigateToPatientDetail(paciente),
-                        ),
-                      );
-                    },
-                  ),
+                return Column(
+                  children: therapistProvider.pacientes.map((paciente) {
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: ListTile(
+                        leading: CircleAvatar(),
+                        title: Text(paciente.nomeCompleto,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(
+                            'Responsável: ${paciente.responsavel.fullName}'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () => _navigateToPatientDetail(paciente),
+                      ),
+                    );
+                  }).toList(),
                 );
               },
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionCard(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap}) {
+    return Card(
+      elevation: 2,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 40, color: Theme.of(context).primaryColor),
+              const SizedBox(height: 12),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

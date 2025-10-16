@@ -14,8 +14,7 @@ public class AtividadeMapper {
                 atividade.getTitulo(),
                 atividade.getDescricaoDetalhada(),
                 atividade.getDuracaoEstimadaMinutos(),
-                atividade.getTipo(),
-                atividade.getPlanos()
+                atividade.getTipo()
         );
     }
 

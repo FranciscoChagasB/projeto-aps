@@ -21,6 +21,21 @@ enum StatusRegistro {
   }
 }
 
+extension StatusRegistroExtension on StatusRegistro {
+  String get displayName {
+    switch (this) {
+      case StatusRegistro.CONCLUIDO:
+        return 'Concluído';
+      case StatusRegistro.CONCLUIDO_COM_DIFICULDADE:
+        return 'Concluído com dificuldade';
+      case StatusRegistro.NAO_CONCLUIDO:
+        return 'Não concluído';
+      case StatusRegistro.UNKNOWN:
+        return 'Desconhecido';
+    }
+  }
+}
+
 class Registro {
   final int id;
   final AtividadeSummary atividade;
@@ -40,7 +55,7 @@ class Registro {
     required this.status,
   });
 
-  /// Factory constructor para criar um Registro a partir de um JSON.
+  // Factory constructor para criar um Registro a partir de um JSON.
   factory Registro.fromJson(Map<String, dynamic> json) {
     return Registro(
       id: json['id'],
@@ -50,6 +65,18 @@ class Registro {
       observacoesDoResponsavel: json['observacoesDoResponsavel'],
       feedbackDoTerapeuta: json['feedbackDoTerapeuta'],
       status: StatusRegistro.fromString(json['status']),
+    );
+  }
+
+  factory Registro.empty() {
+    return Registro(
+      id: 0, // 0 para indicar que não é um registro do banco
+      atividade: AtividadeSummary(id: 0, titulo: ''),
+      crianca: CriancaSummary(id: 0, nomeCompleto: ''),
+      dataHoraConclusao: DateTime.now(),
+      status: StatusRegistro.UNKNOWN,
+      observacoesDoResponsavel: null,
+      feedbackDoTerapeuta: null,
     );
   }
 }

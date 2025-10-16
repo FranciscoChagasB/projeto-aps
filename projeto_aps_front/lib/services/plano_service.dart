@@ -23,6 +23,15 @@ class PlanoService {
     }
   }
 
+  Future<Plano> updatePlano(int planoId, Map<String, dynamic> planoUpdateData) async {
+    try {
+      final response = await _dio.put('/planos/$planoId', data: planoUpdateData);
+      return Plano.fromJson(response.data);
+    } on DioException {
+      throw Exception('Falha ao atualizar o plano.');
+    }
+  }
+
   Future<Plano> addAtividadesAoPlano(int planoId, List<int> atividadeIds) async {
     try {
       final response = await _dio.patch('/planos/$planoId/adicionar-atividades', data: atividadeIds);

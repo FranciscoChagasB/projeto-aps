@@ -1,6 +1,7 @@
 package br.edu.ifce.projetoapsback.resource;
 
 import br.edu.ifce.projetoapsback.model.request.RegistroRequestDto;
+import br.edu.ifce.projetoapsback.model.request.RegistroUpdateRequestDto;
 import br.edu.ifce.projetoapsback.model.response.RegistroResponseDto;
 import br.edu.ifce.projetoapsback.service.RegistroService;
 import jakarta.validation.Valid;
@@ -46,6 +47,14 @@ public class RegistroController {
             @PathVariable Integer registroId,
             @RequestBody String observacoes) {
         return ResponseEntity.ok(registroService.updateObservacoes(registroId, observacoes));
+    }
+
+    @PutMapping("/{registroId}")
+    @PreAuthorize("hasRole('PARENT')")
+    public ResponseEntity<RegistroResponseDto> updateRegistro(
+            @PathVariable Integer registroId,
+            @Valid @RequestBody RegistroUpdateRequestDto requestDto) {
+        return ResponseEntity.ok(registroService.update(registroId, requestDto));
     }
 
 }

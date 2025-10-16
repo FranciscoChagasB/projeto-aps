@@ -92,12 +92,8 @@ class _TherapistChildDetailScreenState extends State<TherapistChildDetailScreen>
                     return const Center(heightFactor: 5, child: Text('Nenhum plano criado para esta criança.'));
                   }
 
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: planoProvider.planos.length,
-                    itemBuilder: (ctx, i) {
-                      final plano = planoProvider.planos[i];
+                  return Column(
+                    children: planoProvider.planos.map((plano) {
                       return Card(
                         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         child: ExpansionTile(
@@ -107,7 +103,6 @@ class _TherapistChildDetailScreenState extends State<TherapistChildDetailScreen>
                             ...plano.atividades.map((ativ) => ListTile(
                               dense: true,
                               title: Text(ativ.titulo),
-                              // Aqui você pode adicionar um botão para remover a atividade do plano
                             )).toList(),
                             ButtonBar(
                               alignment: MainAxisAlignment.spaceEvenly,
@@ -127,7 +122,7 @@ class _TherapistChildDetailScreenState extends State<TherapistChildDetailScreen>
                           ],
                         ),
                       );
-                    },
+                    }).toList(),
                   );
                 },
               ),

@@ -34,7 +34,8 @@ public class SecurityConfiguration {
 
     // Endpoints que só podem ser acessados por usuários com permissão de Administrador
     public static final String [] ENDPOINTS_ADMINISTRATOR = {
-            "/users/test/administrator"
+            "/users/test/administrator",
+            "/admin/**"
     };
 
     @Bean
@@ -45,9 +46,8 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED).permitAll()
-                        .requestMatchers(ENDPOINTS_WITH_AUTHENTICATION_REQUIRED).authenticated()
-                        .requestMatchers(ENDPOINTS_ADMINISTRATOR).hasRole("ADMINISTRATOR")
-                        .requestMatchers(ENDPOINTS_HEALTH_PROFESSIONAL).hasRole("HEALTH_PROFESSIONAL")
+                        .requestMatchers(ENDPOINTS_ADMINISTRATOR).hasAuthority("ADMINISTRATOR")
+                        .requestMatchers(ENDPOINTS_HEALTH_PROFESSIONAL).hasAuthority("HEALTH_PROFESSIONAL")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(userAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

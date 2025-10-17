@@ -10,10 +10,12 @@ import br.edu.ifce.projetoapsback.model.response.RecoveryJwtTokenDto;
 import br.edu.ifce.projetoapsback.repository.UserRepository;
 import br.edu.ifce.projetoapsback.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -51,6 +53,9 @@ public class UserService {
 
     // Método responsável por criar um usuário
     public void createUser(UserRequestDto userRequestDto) {
+        if (userRequestDto.role() == RoleName.ADMINISTRATOR){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Você não tem permissão para criar administradores!");
+        }
 
         // Cria um novo usuário com os dados fornecidos
         User newUser = User.builder()

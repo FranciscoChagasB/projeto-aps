@@ -1,6 +1,8 @@
 package br.edu.ifce.projetoapsback.resource;
 
+import br.edu.ifce.projetoapsback.model.User;
 import br.edu.ifce.projetoapsback.model.request.UpdateUserStatusRequestDto;
+import br.edu.ifce.projetoapsback.model.request.UserRequestDto;
 import br.edu.ifce.projetoapsback.model.response.UserAdminResponseDto;
 import br.edu.ifce.projetoapsback.service.AdminService;
 import jakarta.validation.Valid;
@@ -19,15 +21,35 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @GetMapping("/users")
-    public ResponseEntity<List<UserAdminResponseDto>> getAllUsers() {
-        return ResponseEntity.ok(adminService.getAllUsers());
+    @PostMapping
+    public ResponseEntity<User> create(@RequestBody UserRequestDto user) {
+        return ResponseEntity.ok(adminService.createUser(user));
     }
 
-    @PatchMapping("/users/{userId}/status")
-    public ResponseEntity<UserAdminResponseDto> updateUserStatus(
-            @PathVariable Integer userId,
-            @Valid @RequestBody UpdateUserStatusRequestDto request) {
-        return ResponseEntity.ok(adminService.updateUserStatus(userId, request.getActive()));
+    @GetMapping
+    public ResponseEntity<List<User>> getAll(
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String cpf,
+            @RequestParam(required = false) String fullName,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String professionalCode
+    ) {
+        return ResponseEntity.ok(adminService.getAll(email, cpf, fullName, active, professionalCode));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(adminService.getById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> update(@PathVariable Integer id, @RequestBody UserRequestDto user) {
+        return ResponseEntity.ok(adminService.update(id, user));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        adminService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

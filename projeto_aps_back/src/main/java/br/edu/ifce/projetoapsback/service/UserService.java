@@ -37,46 +37,54 @@ public class UserService {
 
     // Método responsável por autenticar um usuário e retornar um token JWT
     public RecoveryJwtTokenDto authenticateUser(LoginRequestDto loginRequestDto) {
-        // Cria um objeto de autenticação com o email e a senha do usuário
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(loginRequestDto.email(), loginRequestDto.password());
+        try {
+            // Cria um objeto de autenticação com o email e a senha do usuário
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginRequestDto.email(), loginRequestDto.password());
 
-        // Autentica o usuário com as credenciais fornecidas
-        Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            // Autentica o usuário com as credenciais fornecidas
+            Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
-        // Obtém o objeto UserDetails do usuário autenticado
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            // Obtém o objeto UserDetails do usuário autenticado
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        // Gera um token JWT para o usuário autenticado
-        return new RecoveryJwtTokenDto(jwtTokenService.generateToken(userDetails));
+            // Gera um token JWT para o usuário autenticado
+            return new RecoveryJwtTokenDto(jwtTokenService.generateToken(userDetails));
+        }catch (Exception e) {
+            throw new RuntimeException("Credenciais Inválidas: " + e.getMessage());
+        }
     }
 
     // Método responsável por criar um usuário
     public void createUser(UserRequestDto userRequestDto) {
-        if (userRequestDto.role() == RoleName.ADMINISTRATOR){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Você não tem permissão para criar administradores!");
+        try {
+            if (userRequestDto.role() == RoleName.ADMINISTRATOR) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Você não tem permissão para criar administradores!");
+            }
+
+            // Cria um novo usuário com os dados fornecidos
+            User newUser = User.builder()
+                    .email(userRequestDto.email())
+                    .password(securityConfiguration.passwordEncoder().encode(userRequestDto.password()))
+                    .fullName(userRequestDto.fullName())
+                    .cpf(userRequestDto.cpf())
+                    .phone(userRequestDto.phone())
+                    .address(userRequestDto.address())
+                    .active(userRequestDto.active())
+                    .createdAt(userRequestDto.createdAt())
+                    .updatedAt(userRequestDto.updatedAt())
+                    .roles(List.of(Role.builder().name(userRequestDto.role()).build()))
+                    .build();
+
+            if (userRequestDto.role() == RoleName.HEALTH_PROFESSIONAL) {
+                newUser.setProfessionalCode(UUID.randomUUID().toString());
+            }
+
+            // Salva o novo usuário no banco de dados
+            userRepository.save(newUser);
+        }catch (Exception e) {
+            throw new RuntimeException("Erro ao Criar Usuário " + e.getMessage());
         }
-
-        // Cria um novo usuário com os dados fornecidos
-        User newUser = User.builder()
-                .email(userRequestDto.email())
-                .password(securityConfiguration.passwordEncoder().encode(userRequestDto.password()))
-                .fullName(userRequestDto.fullName())
-                .cpf(userRequestDto.cpf())
-                .phone(userRequestDto.phone())
-                .address(userRequestDto.address())
-                .active(userRequestDto.active())
-                .createdAt(userRequestDto.createdAt())
-                .updatedAt(userRequestDto.updatedAt())
-                .roles(List.of(Role.builder().name(userRequestDto.role()).build()))
-                .build();
-
-        if (userRequestDto.role() == RoleName.HEALTH_PROFESSIONAL){
-            newUser.setProfessionalCode(UUID.randomUUID().toString());
-        }
-
-        // Salva o novo usuário no banco de dados
-        userRepository.save(newUser);
     }
 
 }

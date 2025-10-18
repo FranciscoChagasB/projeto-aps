@@ -9,6 +9,7 @@ import br.edu.ifce.projetoapsback.repository.UserRepository;
 import br.edu.ifce.projetoapsback.util.mapper.CriancaMapper;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,13 +95,19 @@ public class CriancaService {
     }
 
     public void delete(Integer id, String responsavelEmail) {
-        User responsavel = findUserByEmail(responsavelEmail);
-        Crianca crianca = findCriancaById(id);
+        try{
+            User responsavel = findUserByEmail(responsavelEmail);
+            Crianca crianca = findCriancaById(id);
 
-        if (!crianca.getResponsavel().getId().equals(responsavel.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para deletar esta criança.");
+            if (!crianca.getResponsavel().getId().equals(responsavel.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para deletar esta criança.");
+            }
+            criancaRepository.deleteById(id);
+        }catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Não é possível excluir esta criança, pois há planos de atividade vinculados a ela.");
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao excluir a criança: " + e.getMessage());
         }
-        criancaRepository.deleteById(id);
     }
 
     private User findUserByEmail(String email) {

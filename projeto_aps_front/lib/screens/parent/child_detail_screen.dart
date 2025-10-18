@@ -111,42 +111,44 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Confirmar Exclusão'),
-        content: Text(
-            'Tem certeza de que deseja excluir o perfil de ${crianca.nomeCompleto}? Esta ação não pode ser desfeita.'),
+        title: const Text('Excluir Criança'),
+        content: const Text('Tem certeza que deseja excluir esta criança?'),
         actions: [
           TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () => Navigator.of(ctx).pop()),
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Excluir'),
             onPressed: () async {
-              final parentProvider =
-                  Provider.of<ParentProvider>(context, listen: false);
+              Navigator.of(ctx).pop();
               try {
-                await parentProvider.deleteCrianca(crianca.id);
+                await Provider.of<ParentProvider>(context, listen: false)
+                    .deleteCrianca(crianca.id);
                 if (mounted) {
-                  Navigator.of(ctx).pop(); // Fecha o dialog
-                  Navigator.of(context).pop(); // Volta para o dashboard
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content:
-                            Text('${crianca.nomeCompleto} foi excluído(a).'),
-                        backgroundColor: Colors.green),
+                    const SnackBar(
+                      content: Text('Criança excluída com sucesso.'),
+                      backgroundColor: Colors.green,
+                    ),
                   );
+                  Navigator.of(context).pop(); // volta pra tela anterior
                 }
               } catch (e) {
                 if (mounted) {
-                  Navigator.of(ctx).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content: Text(e.toString()),
-                        backgroundColor: Colors.red),
+                      content: Text(
+                        e.toString().contains('planos de atividade')
+                            ? 'Não é possível excluir esta criança, pois há planos de atividade vinculados.'
+                            : 'Erro ao excluir criança. Tente novamente.',
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
                   );
                 }
               }
             },
+            child: const Text('Excluir'),
           ),
         ],
       ),

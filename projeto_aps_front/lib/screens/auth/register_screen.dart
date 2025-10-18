@@ -65,19 +65,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _cepFocusNode.removeListener(_onCepFocusChange);
     _cepFocusNode.dispose();
-    // ... dispose de todos os outros controllers
     super.dispose();
   }
 
+  String? _lastSearchedCep;
+
   void _onCepFocusChange() {
     if (!_cepFocusNode.hasFocus) {
-      _fetchAddressData();
+      final cep = _postalCodeController.text;
+      if (cep.length == 8 && cep != _lastSearchedCep) {
+        _fetchAddressData();
+        _lastSearchedCep = cep;
+      }
     }
   }
 
   Future<void> _fetchAddressData() async {
-    FocusScope.of(context).unfocus(); 
-    final cep = _postalCodeController.text;
+    if (_isCepLoading) return; 
+
+      final cep = _postalCodeController.text;
     if (cep.length < 8) return;
 
     setState(() => _isCepLoading = true);
@@ -91,10 +97,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        SnackBar(content: Text('Erro ao buscar CEP: $e'), backgroundColor: Colors.red),
       );
     } finally {
-      if(mounted) setState(() => _isCepLoading = false);
+      if (mounted) setState(() => _isCepLoading = false);
     }
   }
 
@@ -214,8 +220,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       validator: (v) => (v?.length ?? 0) < 8 ? 'CEP deve ter 8 dígitos' : null,
                     ),
-                    // ... (outros campos de endereço)
-                     const SizedBox(height: 16),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _streetController,
+                      decoration: const InputDecoration(labelText: 'Rua'),
+                      validator: (v) => v!.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _numberController,
+                      decoration: const InputDecoration(labelText: 'Número'),
+                      keyboardType: TextInputType.number,
+                      validator: (v) => v!.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _complementController,
+                      decoration: const InputDecoration(labelText: 'Complemento (opcional)'),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _neighborhoodController,
+                      decoration: const InputDecoration(labelText: 'Bairro'),
+                      validator: (v) => v!.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _cityController,
+                      decoration: const InputDecoration(labelText: 'Cidade'),
+                      validator: (v) => v!.isEmpty ? 'Campo obrigatório' : null,
+                    ),
+                    const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: _selectedStateUF,
                       decoration: const InputDecoration(labelText: 'Estado'),
@@ -226,8 +261,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onChanged: (v) => setState(() => _selectedStateUF = v),
                       validator: (v) => v == null ? 'Selecione um estado' : null,
                     ),
+                     const SizedBox(height: 16),
+                    
                     const SizedBox(height: 24),
-
                     // --- Seção de Perfil ---
                     DropdownButtonFormField<RoleName>(
                       value: _selectedRole,

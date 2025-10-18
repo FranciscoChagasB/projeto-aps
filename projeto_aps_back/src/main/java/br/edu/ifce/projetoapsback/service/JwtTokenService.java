@@ -30,7 +30,7 @@ public class JwtTokenService {
                     .withIssuer(ISSUER) // Define o emissor do token
                     .withIssuedAt(creationDate()) // Define a data de emissão do token
                     .withExpiresAt(expirationDate()) // Define a data de expiração do token
-                    .withSubject(user.getUsername())
+                    .withSubject(user.getEmail())
                     .withClaim("active", user.getActive())
                     .withClaim("cpf", user.getCpf())
                     .withClaim("fullName", user.getFullName())

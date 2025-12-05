@@ -34,7 +34,7 @@ class AuthProvider with ChangeNotifier {
       await prefs.setString('authToken', token);
     } catch (e) {
       _error = e.toString();
-      rethrow; // Lança o erro novamente para a UI poder tratá-lo (ex: mostrar SnackBar)
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -8,7 +8,7 @@ spring:
   jpa:
     #database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: false
     properties:
       hibernate:
@@ -25,6 +25,12 @@ spring:
 
 server:
   port: 8080
+
+openai:
+  api:
+    key: ${OPENAI_KEY}
+  model: "gpt-4o-mini"
+  url: "https://api.openai.com/v1/chat/completions"
 
 #logging:
  # level:

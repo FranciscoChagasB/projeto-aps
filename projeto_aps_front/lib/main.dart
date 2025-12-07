@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:projeto_aps_front/providers/admin_provider.dart';
+import 'package:projeto_aps_front/providers/ai_report_provider.dart';
 import 'package:projeto_aps_front/providers/auth_provider.dart';
 import 'package:projeto_aps_front/providers/parent_provider.dart';
 import 'package:projeto_aps_front/providers/plano_provider.dart';
@@ -42,6 +43,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<AuthProvider, PlanoProvider>(
           create: (_) => PlanoProvider(),
           update: (_, auth, plano) => plano!..update(auth),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, AiReportProvider>(
+          create: (_) => AiReportProvider(),
+          update: (_, auth, aiProvider) => aiProvider!..update(auth),
         ),
       ],
       child: MaterialApp(

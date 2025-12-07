@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:projeto_aps_front/models/crianca.dart';
 import 'package:provider/provider.dart';
+import '../common/ai_report_screen.dart';
 import '../../models/atividade_summary.dart';
 import '../../models/plano.dart';
 import '../../models/registro.dart';
@@ -8,10 +10,10 @@ import '../../providers/registro_provider.dart';
 
 class ParentPlanDetailScreen extends StatefulWidget {
   final Plano plano;
-  final int criancaId;
+  final Crianca crianca;
 
   const ParentPlanDetailScreen(
-      {super.key, required this.plano, required this.criancaId});
+      {super.key, required this.plano, required this.crianca});
 
   @override
   State<ParentPlanDetailScreen> createState() => _ParentPlanDetailScreenState();
@@ -40,7 +42,7 @@ class _ParentPlanDetailScreenState extends State<ParentPlanDetailScreen> {
           child: _RegistroFormBottomSheet(
             atividade: atividade,
             planoId: widget.plano.id,
-            criancaId: widget.criancaId,
+            criancaId: widget.crianca.id,
             registro: registro,
           ),
         );
@@ -51,7 +53,32 @@ class _ParentPlanDetailScreenState extends State<ParentPlanDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.plano.nome)),
+      appBar: AppBar(
+        title: Text(widget.plano.nome),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: TextButton.icon(
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text('Relatório IA'),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).primaryColor,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => AiReportScreen(
+                      criancaId: widget.crianca.id,
+                      nomeCrianca: widget.crianca.nomeCompleto,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
       body: Consumer<RegistroProvider>(
         builder: (context, registroProvider, child) {
           try {
@@ -108,8 +135,8 @@ class _ParentPlanDetailScreenState extends State<ParentPlanDetailScreen> {
               ),
             );
           } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString()), backgroundColor: Colors.red));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(e.toString()), backgroundColor: Colors.red));
             return Center(
               child: Text('Ocorreu um erro ao renderizar esta tela: $e'),
             );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:projeto_aps_front/providers/therapist_provider.dart';
+import 'package:projeto_aps_front/screens/common/ai_report_screen.dart';
 import 'package:provider/provider.dart';
 import '../../models/crianca.dart';
 import '../../models/plano.dart';
@@ -21,6 +23,7 @@ class _TherapistChildDetailScreenState extends State<TherapistChildDetailScreen>
     super.initState();
     Future.microtask(() =>
         Provider.of<PlanoProvider>(context, listen: false).fetchPlanosByCriancaId(widget.crianca.id));
+        Provider.of<TherapistProvider>(context, listen: false).fetchAtividadesDaBiblioteca();
   }
 
   void _navigateToAddPlan() {
@@ -55,6 +58,29 @@ class _TherapistChildDetailScreenState extends State<TherapistChildDetailScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.crianca.nomeCompleto),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: TextButton.icon(
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text('Relatório IA'),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).primaryColor,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => AiReportScreen(
+                      criancaId: widget.crianca.id,
+                      nomeCrianca: widget.crianca.nomeCompleto,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () => Provider.of<PlanoProvider>(context, listen: false).fetchPlanosByCriancaId(widget.crianca.id),

@@ -296,7 +296,7 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
                               MaterialPageRoute(
                                 builder: (_) => ParentPlanDetailScreen(
                                   plano: plano,
-                                  criancaId: widget.crianca.id,
+                                  crianca: widget.crianca,
                                 ),
                               ),
                             );

@@ -59,9 +59,14 @@ class RegistroProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateRegistro(
-      int registroId, Map<String, dynamic> data, int planoId) async {
-    await _registroService.updateRegistro(registroId, data);
-    await fetchRegistrosByPlanoId(planoId);
+  Future<void> updateRegistro(int registroId, Map<String, dynamic> updateData, int planoId) async {
+    if (_authProvider?.isAuthenticated != true) return;
+    try {
+      await _registroService.updateRegistro(registroId, updateData);
+      await fetchRegistrosByPlanoId(planoId);
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    }
   }
 }

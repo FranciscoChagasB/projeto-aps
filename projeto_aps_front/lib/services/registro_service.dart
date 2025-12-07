@@ -51,9 +51,12 @@ class RegistroService {
     }
   }
 
-  Future<Registro> updateRegistro(
-      int registroId, Map<String, dynamic> data) async {
-    final response = await _dio.put('/registros/$registroId', data: data);
-    return Registro.fromJson(response.data);
+  Future<Registro> updateRegistro(int registroId, Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.put('/registros/$registroId', data: data);
+      return Registro.fromJson(response.data);
+    } on DioException catch (e) {
+       throw Exception('Falha ao atualizar registro: ${e.response?.data['message'] ?? e.message}');
+    }
   }
 }

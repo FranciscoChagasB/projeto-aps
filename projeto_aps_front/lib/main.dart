@@ -3,6 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:projeto_aps_front/providers/admin_provider.dart';
 import 'package:projeto_aps_front/providers/ai_report_provider.dart';
 import 'package:projeto_aps_front/providers/auth_provider.dart';
+import 'package:projeto_aps_front/providers/chat_provider.dart';
+import 'package:projeto_aps_front/providers/dashboard_provider.dart';
 import 'package:projeto_aps_front/providers/parent_provider.dart';
 import 'package:projeto_aps_front/providers/plano_provider.dart';
 import 'package:projeto_aps_front/providers/registro_provider.dart';
@@ -47,6 +49,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<AuthProvider, AiReportProvider>(
           create: (_) => AiReportProvider(),
           update: (_, auth, aiProvider) => aiProvider!..update(auth),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, DashboardProvider>(
+          create: (_) => DashboardProvider(),
+          update: (_, auth, dashboard) => dashboard!..update(auth),
+        ),
+
+        ChangeNotifierProxyProvider<AuthProvider, ChatProvider>(
+          create: (_) => ChatProvider(),
+          update: (_, auth, chat) => chat!..update(auth),
         ),
       ],
       child: MaterialApp(

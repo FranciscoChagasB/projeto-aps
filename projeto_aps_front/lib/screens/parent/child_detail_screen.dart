@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:projeto_aps_front/screens/common/chat_screen.dart';
+import 'package:projeto_aps_front/screens/common/evolution_charts_widget.dart';
 import 'package:projeto_aps_front/screens/parent/parent_plan_detail_screen.dart';
 import 'package:projeto_aps_front/screens/parent/qr_code_scanner_screen.dart';
 import 'package:provider/provider.dart';
@@ -202,6 +204,27 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                EvolutionChartsWidget(criancaId: widget.crianca.id),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.chat),
+                    label: const Text('Chat com Terapeuta'),
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 45)),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => ChatScreen(
+                              criancaId: widget.crianca.id,
+                              titulo:
+                                  "Chat - ${widget.crianca.nomeCompleto}")));
+                    },
+                  ),
+                ),
+
+                const Divider(),
                 // Card com detalhes da criança
                 Card(
                   margin: const EdgeInsets.all(16),

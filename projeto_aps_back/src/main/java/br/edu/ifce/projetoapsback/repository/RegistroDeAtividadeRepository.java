@@ -9,4 +9,5 @@ public interface RegistroDeAtividadeRepository extends JpaRepository<RegistroDeA
 
     List<RegistroDeAtividade> findByPlanoId(Integer planoId);
 
+    List<RegistroDeAtividade> findByCriancaId(Integer criancaId);
 }

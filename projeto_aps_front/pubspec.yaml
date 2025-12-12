@@ -29,6 +29,7 @@ dependencies:
   path_provider: ^2.1.2
   open_filex: ^4.3.2
   permission_handler: ^11.3.0
+  fl_chart: ^0.66.2
 
 dev_dependencies:
   flutter_test:

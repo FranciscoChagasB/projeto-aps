@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:projeto_aps_front/screens/therapist/therapist_child_detail_screen.dart';
+import 'package:projeto_aps_front/widgets/welcome_card.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../models/crianca.dart';
@@ -20,6 +20,8 @@ class TherapistDashboardScreen extends StatefulWidget {
 }
 
 class _TherapistDashboardScreenState extends State<TherapistDashboardScreen> {
+  final GlobalKey<WelcomeCardState> _welcomeKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -124,6 +126,12 @@ class _TherapistDashboardScreenState extends State<TherapistDashboardScreen> {
     );
   }
 
+  Future<void> _refresh() async {
+    await Provider.of<TherapistProvider>(context, listen: false)
+        .fetchMeusPacientes();
+    _welcomeKey.currentState?.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
@@ -148,95 +156,98 @@ class _TherapistDashboardScreenState extends State<TherapistDashboardScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => Provider.of<TherapistProvider>(context, listen: false)
-            .fetchMeusPacientes(),
-        child: ListView(
+        onRefresh: _refresh,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16.0),
-          children: [
-            Text(
-              'Bem-vindo(a),\n${user?.fullName ?? ''}!',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 24),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                const double breakPoint = 400.0;
-                final bool useColumnLayout = constraints.maxWidth < breakPoint;
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              WelcomeCard(key: _welcomeKey),
+              const SizedBox(height: 24),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  const double breakPoint = 400.0;
+                  final bool useColumnLayout =
+                      constraints.maxWidth < breakPoint;
 
-                final actionCards = [
-                  _buildActionCard(
-                    context,
-                    icon: Icons.library_books_outlined,
-                    label: 'Biblioteca de Atividades',
-                    onTap: _navigateToActivityLibrary,
-                  ),
-                  _buildActionCard(
-                    context,
-                    icon: Icons.qr_code_scanner_outlined,
-                    label: 'Meu Código Profissional',
-                    onTap: () =>
-                        _showProfessionalCode(context, user?.professionalCode),
-                  ),
-                ];
+                  final actionCards = [
+                    _buildActionCard(
+                      context,
+                      icon: Icons.library_books_outlined,
+                      label: 'Biblioteca de Atividades',
+                      onTap: _navigateToActivityLibrary,
+                    ),
+                    _buildActionCard(
+                      context,
+                      icon: Icons.qr_code_scanner_outlined,
+                      label: 'Meu Código Profissional',
+                      onTap: () => _showProfessionalCode(
+                          context, user?.professionalCode),
+                    ),
+                  ];
 
-                if (useColumnLayout) {
-                  return Column(
-                    children: [
+                  if (useColumnLayout) {
+                    return Column(children: [
                       actionCards[0],
                       const SizedBox(height: 16),
-                      actionCards[1],
-                    ],
-                  );
-                } else {
-                  return Row(
-                    children: [
+                      actionCards[1]
+                    ]);
+                  } else {
+                    return Row(children: [
                       Expanded(child: actionCards[0]),
                       const SizedBox(width: 16),
                       Expanded(child: actionCards[1]),
-                    ],
-                  );
-                }
-              },
-            ),
-            const SizedBox(height: 32),
-            Text('Meus Pacientes',
-                style: Theme.of(context).textTheme.titleLarge),
-            const Divider(height: 24),
-            Consumer<TherapistProvider>(
-              builder: (context, therapistProvider, child) {
-                if (therapistProvider.isLoadingPacientes &&
-                    therapistProvider.pacientes.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (therapistProvider.error != null) {
-                  return Center(
-                      child: Text('Erro: ${therapistProvider.error}'));
-                }
-                if (therapistProvider.pacientes.isEmpty) {
-                  return const Center(
-                      child: Text('Nenhum paciente vinculado.'));
-                }
+                    ]);
+                  }
+                },
+              ),
+              const SizedBox(height: 32),
+              Text('Meus Pacientes',
+                  style: Theme.of(context).textTheme.titleLarge),
+              const Divider(height: 24),
+              Consumer<TherapistProvider>(
+                builder: (context, therapistProvider, child) {
+                  if (therapistProvider.isLoadingPacientes &&
+                      therapistProvider.pacientes.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (therapistProvider.error != null) {
+                    return Center(
+                        child: Text('Erro: ${therapistProvider.error}'));
+                  }
+                  if (therapistProvider.pacientes.isEmpty) {
+                    return const Center(
+                        child: Text('Nenhum paciente vinculado.'));
+                  }
 
-                return Column(
-                  children: therapistProvider.pacientes.map((paciente) {
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        leading: CircleAvatar(),
-                        title: Text(paciente.nomeCompleto,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text(
-                            'Responsável: ${paciente.responsavel.fullName}'),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () => _navigateToPatientDetail(paciente),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-          ],
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: therapistProvider.pacientes.length,
+                    itemBuilder: (ctx, i) {
+                      final paciente = therapistProvider.pacientes[i];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: ListTile(
+                          leading:
+                              const CircleAvatar(child: Icon(Icons.person)),
+                          title: Text(paciente.nomeCompleto,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(
+                              'Responsável: ${paciente.responsavel.fullName}'),
+                          trailing:
+                              const Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () => _navigateToPatientDetail(paciente),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -249,9 +260,7 @@ class _TherapistDashboardScreenState extends State<TherapistDashboardScreen> {
     return Card(
       elevation: 2,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         child: Padding(

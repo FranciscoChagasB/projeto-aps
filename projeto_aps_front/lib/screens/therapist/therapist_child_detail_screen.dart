@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:projeto_aps_front/providers/therapist_provider.dart';
 import 'package:projeto_aps_front/screens/common/ai_report_screen.dart';
+import 'package:projeto_aps_front/screens/common/chat_screen.dart';
+import 'package:projeto_aps_front/screens/common/evolution_charts_widget.dart';
 import 'package:provider/provider.dart';
 import '../../models/crianca.dart';
 import '../../models/plano.dart';
@@ -14,37 +16,45 @@ class TherapistChildDetailScreen extends StatefulWidget {
   const TherapistChildDetailScreen({super.key, required this.crianca});
 
   @override
-  State<TherapistChildDetailScreen> createState() => _TherapistChildDetailScreenState();
+  State<TherapistChildDetailScreen> createState() =>
+      _TherapistChildDetailScreenState();
 }
 
-class _TherapistChildDetailScreenState extends State<TherapistChildDetailScreen> {
+class _TherapistChildDetailScreenState
+    extends State<TherapistChildDetailScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<PlanoProvider>(context, listen: false).fetchPlanosByCriancaId(widget.crianca.id));
-        Provider.of<TherapistProvider>(context, listen: false).fetchAtividadesDaBiblioteca();
+    Future.microtask(() => Provider.of<PlanoProvider>(context, listen: false)
+        .fetchPlanosByCriancaId(widget.crianca.id));
+    Provider.of<TherapistProvider>(context, listen: false)
+        .fetchAtividadesDaBiblioteca();
   }
 
   void _navigateToAddPlan() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (ctx) => AddEditPlanScreen(crianca: widget.crianca)),
+      MaterialPageRoute(
+          builder: (ctx) => AddEditPlanScreen(crianca: widget.crianca)),
     );
   }
-  
+
   void _confirmDeletePlan(Plano plano) {
-     showDialog(
+    showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Confirmar Exclusão'),
-        content: Text('Tem certeza de que deseja excluir o plano "${plano.nome}"? Todos os registros associados também podem ser perdidos.'),
+        content: Text(
+            'Tem certeza de que deseja excluir o plano "${plano.nome}"? Todos os registros associados também podem ser perdidos.'),
         actions: [
-          TextButton(child: const Text('Cancelar'), onPressed: () => Navigator.of(ctx).pop()),
+          TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () => Navigator.of(ctx).pop()),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Excluir'),
             onPressed: () {
-              Provider.of<PlanoProvider>(context, listen: false).deletePlano(plano.id, widget.crianca.id);
+              Provider.of<PlanoProvider>(context, listen: false)
+                  .deletePlano(plano.id, widget.crianca.id);
               Navigator.of(ctx).pop();
             },
           ),
@@ -83,63 +93,100 @@ class _TherapistChildDetailScreenState extends State<TherapistChildDetailScreen>
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => Provider.of<PlanoProvider>(context, listen: false).fetchPlanosByCriancaId(widget.crianca.id),
+        onRefresh: () => Provider.of<PlanoProvider>(context, listen: false)
+            .fetchPlanosByCriancaId(widget.crianca.id),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              EvolutionChartsWidget(criancaId: widget.crianca.id),
+
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.chat),
+                  label: const Text('Chat com Responsável'),
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 45)),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => ChatScreen(
+                            criancaId: widget.crianca.id,
+                            titulo: "Chat - ${widget.crianca.nomeCompleto}")));
+                  },
+                ),
+              ),
+
+              const Divider(),
+
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Text('Paciente: ${widget.crianca.nomeCompleto}', style: Theme.of(context).textTheme.headlineSmall),
-                     const SizedBox(height: 8),
-                     Text('Responsável: ${widget.crianca.responsavel.fullName}'),
-                     Text('Nascimento: ${DateFormat('dd/MM/yyyy').format(widget.crianca.dataNascimento)}'),
+                    Text('Paciente: ${widget.crianca.nomeCompleto}',
+                        style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: 8),
+                    Text('Responsável: ${widget.crianca.responsavel.fullName}'),
+                    Text(
+                        'Nascimento: ${DateFormat('dd/MM/yyyy').format(widget.crianca.dataNascimento)}'),
                   ],
                 ),
               ),
               const Divider(height: 1),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text('Planos de Atividades', style: Theme.of(context).textTheme.titleLarge),
+                child: Text('Planos de Atividades',
+                    style: Theme.of(context).textTheme.titleLarge),
               ),
               Consumer<PlanoProvider>(
                 builder: (context, planoProvider, child) {
                   if (planoProvider.isLoading && planoProvider.planos.isEmpty) {
-                    return const Center(heightFactor: 5, child: CircularProgressIndicator());
+                    return const Center(
+                        heightFactor: 5, child: CircularProgressIndicator());
                   }
                   if (planoProvider.error != null) {
                     return Center(child: Text('Erro: ${planoProvider.error}'));
                   }
                   if (planoProvider.planos.isEmpty) {
-                    return const Center(heightFactor: 5, child: Text('Nenhum plano criado para esta criança.'));
+                    return const Center(
+                        heightFactor: 5,
+                        child: Text('Nenhum plano criado para esta criança.'));
                   }
 
                   return Column(
                     children: planoProvider.planos.map((plano) {
                       return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         child: ExpansionTile(
-                          title: Text(plano.nome, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          title: Text(plano.nome,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: Text(plano.objetivo),
                           children: [
-                            ...plano.atividades.map((ativ) => ListTile(
-                              dense: true,
-                              title: Text(ativ.titulo),
-                            )).toList(),
+                            ...plano.atividades
+                                .map((ativ) => ListTile(
+                                      dense: true,
+                                      title: Text(ativ.titulo),
+                                    ))
+                                .toList(),
                             ButtonBar(
                               alignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 TextButton.icon(
-                                  icon: const Icon(Icons.add_task, color: Colors.blue),
+                                  icon: const Icon(Icons.add_task,
+                                      color: Colors.blue),
                                   label: const Text('Adicionar Atividade'),
-                                  onPressed: () { /* Lógica para abrir seletor de atividades */ },
+                                  onPressed: () {
+                                    /* Lógica para abrir seletor de atividades */
+                                  },
                                 ),
                                 TextButton.icon(
-                                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                  icon: const Icon(Icons.delete_outline,
+                                      color: Colors.red),
                                   label: const Text('Excluir Plano'),
                                   onPressed: () => _confirmDeletePlan(plano),
                                 ),
